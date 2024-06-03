@@ -1,0 +1,45 @@
+import docker
+import sys
+
+def list_volumes(client):
+    """List all Docker volumes."""
+    return client.volumes.list()
+
+def list_unused_volumes(client):
+    """List all unused Docker volumes."""
+    all_volumes = list_volumes(client)
+    unused_volumes = []
+    
+    for volume in all_volumes:
+        if not volume.attrs['Containers']:
+            unused_volumes.append(volume)
+    
+    return unused_volumes
+
+def remove_volume(volume):
+    """Remove a Docker volume."""
+    try:
+        volume.remove()
+        print(f"Removed volume: {volume.name}")
+    except docker.errors.APIError as e:
+        print(f"Failed to remove volume: {volume.name}. Error: {str(e)}")
+
+def cleanup_unused_volumes():
+    """Cleanup all unused Docker volumes."""
+    client = docker.from_env()
+    
+    unused_volumes = list_unused_volumes(client)
+    
+    if not unused_volumes:
+        print("No unused volumes to remove.")
+        return
+    
+    print(f"Found {len(unused_volumes)} unused volumes. Removing...")
+    
+    for volume in unused_volumes:
+        remove_volume(volume)
+    
+    print("Cleanup completed.")
+
+if __name__ == "__main__":
+    cleanup_unused_volumes()
