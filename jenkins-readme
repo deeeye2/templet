@@ -1,0 +1,34 @@
+Explanation of Each Section
+pipeline: The root element that defines the entire pipeline.
+agent any: Specifies that the pipeline can run on any available Jenkins agent.
+environment: Defines environment variables that can be used throughout the pipeline.
+stages
+stage('Checkout'): Checks out the source code from the repository.
+
+steps: The steps to perform within the stage.
+checkout scm: Checks out the source code using the configured SCM (Source Code Management).
+stage('Build'): Builds the application.
+
+sh 'make build': Runs the build command defined in the Makefile.
+stage('Test'): Tests the application.
+
+sh 'make test': Runs the test command defined in the Makefile.
+stage('Docker Build'): Builds the Docker image.
+
+script: Allows running multiple steps inside a script block.
+docker.build: Builds a Docker image with the specified tag.
+stage('Docker Push'): Pushes the Docker image to a Docker registry.
+
+script: Runs multiple steps inside a script block.
+docker.withRegistry: Authenticates with the Docker registry using the specified credentials and pushes the image.
+stage('Deploy'): Deploys the application.
+
+sh 'make deploy': Runs the deploy command defined in the Makefile.
+post
+post: Defines actions to be taken after the stages.
+always: Actions that run regardless of the pipeline outcome (e.g., cleanup).
+sh 'make clean': Runs the cleanup command defined in the Makefile.
+success: Actions that run only if the pipeline succeeds.
+echo 'Pipeline succeeded!': Prints a success message.
+failure: Actions that run only if the pipeline fails.
+echo 'Pipeline failed!': Prints a failure message.
