@@ -1,0 +1,17 @@
+Explanation of Each Section
+FROM: Specifies the base image to use for the container. Here, we use the official Ubuntu 20.04 image.
+LABEL: Adds metadata to the image, such as the maintainer information.
+ENV: Sets environment variables. APP_HOME sets the application directory, and LANG and LC_ALL set locale-related variables.
+RUN: Executes commands to set up the environment. Here, we:
+Update the package list.
+Install required packages.
+Clean up to reduce the image size.
+WORKDIR: Sets the working directory inside the container.
+COPY: Copies files from the local filesystem to the container. The current directory (.) is copied to APP_HOME.
+RUN (dependencies): Installs application dependencies. This example uses pip3 to install Python packages from a requirements.txt file.
+RUN (user): Adds a new user (myuser) and changes the ownership of the application directory.
+USER: Switches to the newly created user (myuser).
+EXPOSE: Informs Docker that the container listens on the specified network port at runtime (port 8080 in this case).
+CMD: Specifies the default command to run when the container starts. Here, it runs the app.py script using Python 3.
+ENTRYPOINT: (Optional) Specifies an entrypoint script. This script can be used to set up the environment before the main command is run.
+HEALTHCHECK: (Optional) Defines a health check to monitor the container's health. It uses curl to check if the application responds on port 8080.
