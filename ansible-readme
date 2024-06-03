@@ -1,0 +1,23 @@
+Explanation of Each Section
+name: Provides a descriptive name for the playbook.
+hosts: Specifies the target hosts for the playbook.
+become: Enables privilege escalation (e.g., sudo).
+vars: Defines variables used in the playbook.
+tasks: Lists the tasks to be executed on the target hosts.
+apt: Manages apt packages.
+copy: Copies files to the remote host.
+file: Manages files and directories.
+service: Manages services.
+user: Manages user accounts.
+git: Clones Git repositories.
+template: Deploys configuration files using Jinja2 templates.
+cron: Manages cron jobs.
+fetch: Retrieves files from remote hosts.
+ufw: Manages UFW firewall rules.
+docker_container: Manages Docker containers.
+command: Executes shell commands.
+script: Executes shell scripts.
+notify: Sends notifications to handlers.
+handlers: Defines actions triggered by notifications.
+roles: Includes roles for modular and reusable playbook code.
+tags: Allows tagging tasks for selective execution.
