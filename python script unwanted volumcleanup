@@ -1,0 +1,16 @@
+Explanation
+list_volumes: This function lists all Docker volumes.
+list_unused_volumes: This function filters out and lists all volumes that are not currently being used by any container.
+remove_volume: This function attempts to remove a given Docker volume and prints a success or failure message.
+cleanup_unused_volumes: This function orchestrates the cleanup process by:
+Connecting to the Docker client.
+Finding all unused volumes.
+Removing each unused volume.
+How to Use
+Run the Script: Execute the script to clean up unused Docker volumes:
+sh
+Copy code
+python cleanup_docker_volumes.py
+Additional Considerations
+Safety Check: The script only removes volumes that are not associated with any container to prevent accidental data loss.
+Permissions: Ensure the script runs with appropriate permissions to access Docker (usually requires sudo).
