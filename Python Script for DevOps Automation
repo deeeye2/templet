@@ -1,0 +1,90 @@
+#pip install gitpython docker paramiko requests
+
+import os
+import git
+import docker
+import paramiko
+import requests
+import time
+
+# Configuration
+GITHUB_REPO = "https://github.com/yourusername/yourrepo.git"
+CLONE_DIR = "/tmp/yourrepo"
+DOCKER_IMAGE_NAME = "yourdockerhubusername/yourapp"
+DOCKER_TAG = "latest"
+DOCKERFILE_PATH = "./Dockerfile"
+DOCKER_REGISTRY = "https://index.docker.io/v1/"
+DOCKER_USERNAME = "yourdockerhubusername"
+DOCKER_PASSWORD = "yourdockerhubpassword"
+SSH_HOST = "your_server_ip"
+SSH_PORT = 22
+SSH_USERNAME = "your_ssh_username"
+SSH_PASSWORD = "your_ssh_password"
+DEPLOY_COMMANDS = [
+    "docker pull yourdockerhubusername/yourapp:latest",
+    "docker stop yourapp || true",
+    "docker rm yourapp || true",
+    "docker run -d --name yourapp -p 80:80 yourdockerhubusername/yourapp:latest"
+]
+HEALTH_CHECK_URL = "http://your_server_ip"
+HEALTH_CHECK_INTERVAL = 60
+
+# Clone GitHub repository
+def clone_repo(repo_url, clone_to_path):
+    if os.path.exists(clone_to_path):
+        repo = git.Repo(clone_to_path)
+        repo.remote().pull()
+        print(f"Updated existing repository at {clone_to_path}")
+    else:
+        repo = git.Repo.clone_from(repo_url, clone_to_path)
+        print(f"Cloned repository to {clone_to_path}")
+
+# Build and push Docker image
+def build_and_push_docker_image(image_name, tag, dockerfile_path, registry_url, username, password):
+    client = docker.from_env()
+    print("Building Docker image...")
+    client.images.build(path=dockerfile_path, tag=f"{image_name}:{tag}")
+    print("Docker image built successfully")
+
+    client.login(username=username, password=password, registry=registry_url)
+    print("Pushing Docker image to registry...")
+    client.images.push(repository=image_name, tag=tag)
+    print("Docker image pushed successfully")
+
+# Deploy application via SSH
+def deploy_application_via_ssh(host, port, username, password, commands):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=host, port=port, username=username, password=password)
+    for command in commands:
+        print(f"Executing command: {command}")
+        stdin, stdout, stderr = ssh.exec_command(command)
+        print(stdout.read().decode())
+        print(stderr.read().decode())
+    ssh.close()
+
+# Monitor service
+def monitor_service(url, interval=60):
+    while True:
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                print(f"Service is up and running (status code: {response.status_code})")
+            else:
+                print(f"Service is down (status code: {response.status_code})")
+        except requests.RequestException as e:
+            print(f"Error while checking service: {e}")
+        time.sleep(interval)
+
+if __name__ == "__main__":
+    # Step 1: Clone the repository
+    clone_repo(GITHUB_REPO, CLONE_DIR)
+    
+    # Step 2: Build and push Docker image
+    build_and_push_docker_image(DOCKER_IMAGE_NAME, DOCKER_TAG, CLONE_DIR, DOCKER_REGISTRY, DOCKER_USERNAME, DOCKER_PASSWORD)
+    
+    # Step 3: Deploy application via SSH
+    deploy_application_via_ssh(SSH_HOST, SSH_PORT, SSH_USERNAME, SSH_PASSWORD, DEPLOY_COMMANDS)
+    
+    # Step 4: Monitor the service
+    monitor_service(HEALTH_CHECK_URL, HEALTH_CHECK_INTERVAL)
