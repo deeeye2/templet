@@ -1,0 +1,114 @@
+---
+# Ansible Playbook Template
+
+- name: Example Playbook               # Name of the playbook
+  hosts: all                           # Target hosts (can be an inventory group or 'all')
+  become: true                         # Use privilege escalation (sudo)
+  vars:
+    # Variables can be defined here
+    example_variable: "example_value"  # Example variable definition
+
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes              # Update the apt cache
+        upgrade: dist                  # Perform a dist-upgrade
+
+    - name: Install a list of packages
+      apt:
+        name:
+          - git                        # Package to install
+          - curl                       # Another package to install
+          - vim                        # Another package to install
+        state: present                 # Ensure the packages are present
+
+    - name: Ensure a file is present
+      copy:
+        src: /path/to/local/file       # Path to the local source file
+        dest: /path/to/remote/file     # Destination path on the remote host
+        owner: root                    # File owner
+        group: root                    # File group
+        mode: '0644'                   # File permissions
+
+    - name: Ensure a directory exists
+      file:
+        path: /path/to/directory       # Path to the directory
+        state: directory               # Ensure it's a directory
+        owner: root                    # Directory owner
+        group: root                    # Directory group
+        mode: '0755'                   # Directory permissions
+
+    - name: Ensure a service is running and enabled
+      service:
+        name: apache2                  # Name of the service
+        state: started                 # Ensure the service is started
+        enabled: yes                   # Ensure the service is enabled on boot
+
+    - name: Create a user
+      user:
+        name: example_user             # Username
+        password: "{{ 'password' | password_hash('sha512') }}" # Encrypted password
+        shell: /bin/bash               # User's shell
+        state: present                 # Ensure the user is present
+
+    - name: Clone a Git repository
+      git:
+        repo: 'https://github.com/example/repo.git' # Repository URL
+        dest: /path/to/clone                        # Destination path
+        version: master                             # Branch to checkout
+
+    - name: Deploy a template file
+      template:
+        src: /path/to/template.j2      # Path to the Jinja2 template
+        dest: /path/to/destination     # Destination path on the remote host
+        owner: root                    # File owner
+        group: root                    # File group
+        mode: '0644'                   # File permissions
+
+    - name: Manage cron jobs
+      cron:
+        name: "example cron job"       # Cron job name
+        minute: "0"                    # Minute field in cron schedule
+        hour: "0"                      # Hour field in cron schedule
+        job: "/usr/bin/example_script" # Command to run
+
+    - name: Fetch a file from remote nodes
+      fetch:
+        src: /path/to/remote/file      # Path to the remote file
+        dest: /path/to/local/destination # Local destination path
+        flat: yes                      # Store the file without creating directory structure
+
+    - name: Manage firewall rules
+      ufw:
+        rule: allow                    # Rule to allow traffic
+        port: '22'                     # Port number
+
+    - name: Manage Docker containers
+      docker_container:
+        name: my_container             # Container name
+        image: nginx                   # Docker image
+        state: started                 # Ensure the container is started
+        ports:
+          - "80:80"                   # Port mapping (host:container)
+
+    - name: Execute a shell command
+      command: /usr/bin/command        # Command to execute
+
+    - name: Execute a script
+      script: /path/to/script.sh       # Path to the script to execute
+
+    - name: Send a notification
+      notify:
+        - Restart Apache               # Trigger the handler to restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2                  # Name of the service to restart
+        state: restarted               # Action to restart the service
+
+  roles:
+    - role: example_role               # Role to include (must be defined elsewhere)
+
+  tags:
+    - always                           # Tag for controlling task execution
