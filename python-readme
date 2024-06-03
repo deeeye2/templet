@@ -1,0 +1,25 @@
+pip install docker paramiko requests
+
+
+
+
+Explanation of Each Section
+Docker-related functions:
+
+build_and_push_docker_image:
+Builds a Docker image from the specified Dockerfile path.
+Logs into the Docker registry and pushes the image.
+SSH-related functions:
+
+deploy_application_via_ssh:
+Connects to a remote server via SSH.
+Executes a series of commands to deploy the application (e.g., pulling the Docker image, stopping and removing any existing container, running a new container).
+Monitoring-related functions:
+
+monitor_service:
+Periodically checks the status of a service by sending HTTP requests.
+Logs whether the service is up or down based on the response status code.
+Customization
+Replace placeholder values (e.g., DockerHub credentials, SSH credentials, server IP, etc.) with your actual values.
+Modify the DEPLOY_COMMANDS list to fit your specific deployment commands.
+Adjust the SERVICE_URL and other parameters in the monitor_service function to match your service's details.
