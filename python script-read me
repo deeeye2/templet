@@ -1,0 +1,11 @@
+pip install gitpython docker paramiko requests
+
+Explanation
+Clone a GitHub Repository: The script first checks if the repository already exists locally. If it does, it pulls the latest changes. If not, it clones the repository.
+Build and Push Docker Image: The script builds a Docker image from the Dockerfile located in the cloned repository directory and then pushes this image to Docker Hub.
+Deploy Docker Container via SSH: Using paramiko, the script connects to a remote server via SSH and executes a series of commands to pull the latest Docker image and deploy it as a container.
+Monitor Deployment: The script continuously monitors the service by checking a health check URL at specified intervals.
+Customization
+Configuration Variables: Replace the placeholder values in the configuration section with your actual values.
+Commands: Adjust the DEPLOY_COMMANDS list based on your deployment steps.
+Health Check: Modify the HEALTH_CHECK_URL and HEALTH_CHECK_INTERVAL according to your monitoring requirements.
