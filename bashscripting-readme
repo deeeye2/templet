@@ -1,0 +1,23 @@
+Explanation of Each Section
+#!/bin/bash: Specifies the interpreter to use for the script.
+set -e: Ensures the script exits immediately if any command exits with a non-zero status.
+set -x: Enables debug mode, which prints each command before executing it. Uncomment this line to enable it.
+readonly: Defines read-only constants.
+SCRIPT_NAME: The name of the script.
+SCRIPT_DIR: The directory where the script is located.
+LOG_FILE: The path to the log file.
+log function: Logs messages with a timestamp.
+usage function: Displays usage information for the script.
+Root check: Ensures the script is run as root.
+Command line argument parsing: Uses a while loop and case statement to handle command line options.
+-h, --help: Shows the help message.
+-f, --file: Specifies the input file.
+-v, --verbose: Enables verbose mode.
+Argument validation: Checks if the required arguments are provided.
+Verbose mode: Enables debug mode if the verbose option is set.
+main function: The main logic of the script.
+Logs the start of the script.
+Checks if the specified file exists.
+Processes the file line by line.
+Logs the completion of the script.
+main function call: Executes the main function.
