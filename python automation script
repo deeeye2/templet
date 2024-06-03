@@ -1,0 +1,70 @@
+import docker
+import paramiko
+import requests
+import time
+
+# Docker-related functions
+def build_and_push_docker_image(image_name, tag, dockerfile_path, registry_url, username, password):
+    client = docker.from_env()
+    print("Building Docker image...")
+    image = client.images.build(path=dockerfile_path, tag=f"{image_name}:{tag}")
+    print("Docker image built successfully")
+
+    client.login(username=username, password=password, registry=registry_url)
+    print("Pushing Docker image to registry...")
+    client.images.push(repository=image_name, tag=tag)
+    print("Docker image pushed successfully")
+
+# SSH-related functions
+def deploy_application_via_ssh(host, port, username, password, commands):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=host, port=port, username=username, password=password)
+    for command in commands:
+        print(f"Executing command: {command}")
+        stdin, stdout, stderr = ssh.exec_command(command)
+        print(stdout.read().decode())
+        print(stderr.read().decode())
+    ssh.close()
+
+# Monitoring-related functions
+def monitor_service(url, expected_status=200, interval=60):
+    while True:
+        try:
+            response = requests.get(url)
+            if response.status_code == expected_status:
+                print(f"Service is up and running (status code: {response.status_code})")
+            else:
+                print(f"Service is down (status code: {response.status_code})")
+        except requests.RequestException as e:
+            print(f"Error while checking service: {e}")
+        time.sleep(interval)
+
+if __name__ == "__main__":
+    # Docker operations
+    IMAGE_NAME = "my-app"
+    TAG = "latest"
+    DOCKERFILE_PATH = "./"
+    REGISTRY_URL = "https://index.docker.io/v1/"
+    DOCKER_USERNAME = "your_dockerhub_username"
+    DOCKER_PASSWORD = "your_dockerhub_password"
+
+    build_and_push_docker_image(IMAGE_NAME, TAG, DOCKERFILE_PATH, REGISTRY_URL, DOCKER_USERNAME, DOCKER_PASSWORD)
+
+    # SSH deployment
+    SSH_HOST = "your_server_ip"
+    SSH_PORT = 22
+    SSH_USERNAME = "your_ssh_username"
+    SSH_PASSWORD = "your_ssh_password"
+    DEPLOY_COMMANDS = [
+        "docker pull my-app:latest",
+        "docker stop my-app || true",
+        "docker rm my-app || true",
+        "docker run -d --name my-app -p 80:80 my-app:latest"
+    ]
+
+    deploy_application_via_ssh(SSH_HOST, SSH_PORT, SSH_USERNAME, SSH_PASSWORD, DEPLOY_COMMANDS)
+
+    # Monitoring service
+    SERVICE_URL = "http://your_server_ip"
+    monitor_service(SERVICE_URL)
